@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+
+# ChromaDB
+backend/chroma_db/
+
+# Uploaded Documents
+backend/uploads/
+
+# React / Node.js
+frontend/node_modules/
+frontend/dist/
+
+# Build and test files
+.pytest_cache/
+.coverage
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,60 @@
+Sales Performance Report (txt file)
+
+What was the total revenue in 2024?
+Which quarter generated the highest revenue, and why?
+Which product had the highest number of units sold?
+What was the growth rate in Q4?
+Calculate the percentage of annual revenue contributed by smartphones.
+What was the average revenue per unit for accessories?
+Why might tablet sales have declined?
+What recommendations were provided to improve sales?
+Can we determine the company's net profit from this report?
+How much more revenue did smartphones generate than accessories?
+What was the average quarterly revenue?
+
+Who won IPL?
+
+------------------------------------------------------------
+
+1) Text-based queries
+1. What is Machine Learning, and how does it differ from traditional programming?
+2. Explain the four main types of Machine Learning with examples.
+3. What is Deep Learning, and how do neural networks learn from data?
+4. What is Retrieval-Augmented Generation (RAG), and how does its pipeline work?
+5. What are the main components of an AI agent, and what is the purpose of each?
+6. What are the major limitations and security risks of Generative AI and AI agents?
+
+
+2) Table-based queries
+1. According to the AI technologies comparison table, what is the primary purpose of Machine Learning, Deep Learning, Generative AI, and Agentic AI?
+2. Which Machine Learning algorithms are listed as unsupervised learning algorithms, and what are their common use cases?D
+3. Which algorithm in the comparison table groups observations into clusters?
+4. According to the Generative AI vs. AI Agent table, how do their objectives and outputs differ?
+5. Which technology is associated with image recognition, and which is associated with sales forecasting?
+
+
+3) Image-based queries
+These questions specifically test information contained in the two workflow diagrams.
+
+What is the first step in the Machine Learning Workflow?
+What happens during data preprocessing?
+What is the purpose of feature engineering?
+Why is model evaluation important?
+What happens during deployment and monitoring?
+
+How an AI agent works?
+What happens during the Use Tools step?
+What happens Planning in AI Agent ?
+
+
+
+4) Follow-up queries
+Use these after your chatbot answers the initial question to check whether it can retrieve related information across multiple sections.
+
+Follow-up 1
+Initial query: What is RAG, and how does it work?
+Follow-up: How can poor document extraction or irrelevant retrieved chunks affect the final answer?
+
+Follow-up 2
+Initial query: What are the stages of the AI Agent Workflow?
+Follow-up: How does observation and feedback help the agent decide whether to continue, change its plan, or provide the final response?
