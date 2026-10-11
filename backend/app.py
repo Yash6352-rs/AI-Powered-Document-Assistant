@@ -56,7 +56,7 @@ for filename in os.listdir(UPLOAD_FOLDER):
 clear_vector_db()
 reset_bm25_retriever()
 
-logger.info("Previous session data cleared successfully.")
+logger.info("Previous data cleared successfully.")
 
 
 @app.get("/")
