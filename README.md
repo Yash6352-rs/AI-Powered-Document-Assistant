@@ -19,7 +19,7 @@ The system combines **semantic vector search, MMR, BM25 keyword search, and Reci
 - ✨ Query rewriting for follow-up questions
 - 🤖 LLM-based answer generation using OpenRouter
 - 🧹 LLM-based relevance filtering
-- 📚 Source citations with filename, page number when available, and chunk ID
+- 📚 Source citations
 - 🖼️ Text extraction from PDF images using OCR
 - 📊 Table extraction from PDF documents
 - 🛡️ Input validation and error handling
@@ -114,7 +114,7 @@ The system combines **semantic vector search, MMR, BM25 keyword search, and Reci
 
 # 🧠 RAG Pipeline
 
-## 1. 📄 Document Processing
+## 1. Document Processing
 
 The application supports PDF and TXT files.
 
@@ -127,11 +127,11 @@ Extracted content is split into overlapping chunks using `RecursiveCharacterText
 
 Each chunk stores metadata such as `document_id`, `filename`, `page`, and `chunk_id` for source identification.
 
-## 2. 🔢 Embeddings
+## 2. Embeddings
 
 The project uses `sentence-transformers/all-MiniLM-L6-v2` to convert text chunks into vector embeddings, which are stored in ChromaDB for semantic search.
 
-## 3. 🔍 Hybrid Retrieval
+## 3. Hybrid Retrieval
 
 The system combines vector search and keyword search to retrieve relevant information.
 
@@ -159,7 +159,7 @@ The system combines vector search and keyword search to retrieve relevant inform
 - **RRF:** Combines rankings from both retrieval methods.
 - **Relevance Filtering:** Uses an LLM to remove irrelevant chunks before answer generation.
 
-## 4. ✨ Query Rewriting
+## 4. Query Rewriting
 
 Follow-up questions are rewritten into standalone queries using the last six chat messages.
 
@@ -169,7 +169,7 @@ Follow-up questions are rewritten into standalone queries using the last six cha
 
 The system uses conversation history to understand that the second question refers to machine learning.
 
-## 5. 🤖 Answer Generation
+## 5. Answer Generation
 
 LangChain passes the retrieved context to the LLM, which is instructed to:
 
@@ -184,7 +184,7 @@ If the answer is not found, the system returns:
 I couldn't find this information in the uploaded document.
 ```
 
-## 6. 📚 Source Citations
+## 6. Source Citations
 
 The backend returns source metadata with each answer, including filenames, page numbers when available, and chunk IDs.
 
@@ -234,21 +234,21 @@ Document-AI-Assistant/
 ---
 ## 🚀 Installation and Setup
 
-### 📋 Prerequisites
+### Prerequisites
 - Python 3.10
 - Node.js and npm
 - Git
 - Tesseract OCR
 - OpenRouter API key
 
-### 1️⃣ Clone the Repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/Yash6352-rs/AI-Powered-Document-Assistant.git
 cd AI-Powered-Document-Assistant
 ```
 
-### 2️⃣ Set Up the Backend
+### Set Up the Backend
 
 ```bash
 cd backend
@@ -267,7 +267,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### 3️⃣ Configure the API Key
+### Configure the API Key
 
 Create a `.env` file inside the `backend` directory:
 
@@ -275,11 +275,11 @@ Create a `.env` file inside the `backend` directory:
 OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
-### 4️⃣ Configure Tesseract OCR
+### Configure Tesseract OCR
 
 Install Tesseract OCR and ensure its executable path is configured correctly in your code.
 
-### 5️⃣ ▶️ Run the Backend
+### Run the Backend
 
 ```bash
 uvicorn app:app --reload
@@ -288,7 +288,7 @@ uvicorn app:app --reload
 - 🌐 Backend: http://127.0.0.1:8000
 - 📖 API Docs: http://127.0.0.1:8000/docs
 
-### 6️⃣ 💻 Run the Frontend
+### Run the Frontend
 
 Open a new terminal:
 
@@ -304,14 +304,11 @@ Open http://localhost:5173 in your browser.
 
 ## 🛡️ Error Handling and Logging
 
-- ✅ Validates file types, file sizes, and empty uploads.
-- ⚠️ Handles upload and request errors.
-- 📝 Uses Python logging for errors and `print()` for development progress.
-- 🔒 Keeps internal exception details out of user-facing error messages.
+- Validates file types, file sizes, and empty uploads.
+- Handles upload and request errors.
+- Uses Python logging for errors and `print()` for development progress.
+- Keeps internal exception details out of user-facing error messages.
 
----
-
-**🔐 Security:** Never commit your `.env` file or API key to GitHub.
 ---
 
 ## 📷 Output
