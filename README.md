@@ -234,21 +234,21 @@ Document-AI-Assistant/
 ---
 ## 🚀 Installation and Setup
 
-### Prerequisites
+### 1 Prerequisites
 - Python 3.10
 - Node.js and npm
 - Git
 - Tesseract OCR
 - OpenRouter API key
 
-### Clone the Repository
+### 2 Clone the Repository
 
 ```bash
 git clone https://github.com/Yash6352-rs/AI-Powered-Document-Assistant.git
 cd AI-Powered-Document-Assistant
 ```
 
-### Set Up the Backend
+### 3 Set Up the Backend
 
 ```bash
 cd backend
@@ -267,7 +267,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### Configure the API Key
+### 4 Configure the API Key
 
 Create a `.env` file inside the `backend` directory:
 
@@ -275,7 +275,7 @@ Create a `.env` file inside the `backend` directory:
 OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
-### Configure Tesseract OCR
+### 5 Configure Tesseract OCR
 
 Install Tesseract OCR and ensure its executable path is configured correctly in your code.
 
@@ -285,10 +285,10 @@ Install Tesseract OCR and ensure its executable path is configured correctly in 
 uvicorn app:app --reload
 ```
 
-- 🌐 Backend: http://127.0.0.1:8000
-- 📖 API Docs: http://127.0.0.1:8000/docs
+- Backend: http://127.0.0.1:8000
+- API Docs: http://127.0.0.1:8000/docs
 
-### Run the Frontend
+### 6 Run the Frontend
 
 Open a new terminal:
 
@@ -313,23 +313,7 @@ Open http://localhost:5173 in your browser.
 
 ## 📷 Output
 
-The `Output SS/` directory can contain screenshots and demonstration assets, such as:
-
-- Homepage
-- 1-user-interface
-- 2-file-upload
-- 3-text-file_1
-- 3-text-file_2
-- 3-text-file_3
-- 4-pdf-query_1
-- 4-pdf-query_2
-- 5-pdf-table_1
-- 5-pdf-table_2
-- 6-pdf-image_1
-- 6-pdf-image_2
-- 7-pdf-not-found-query
-- PDF File Recording
-- TXT File Recording
+The `Output SS/` directory can contain screenshots and video recording.
 
 ---
 
