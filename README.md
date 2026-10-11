@@ -8,10 +8,9 @@ The system combines **semantic vector search, MMR, BM25 keyword search, and Reci
 
 ## ✨ Features
 
-- 📄 Upload multiple PDF and TXT documents
+- 📄 Upload PDF and TXT documents
 - 💬 Conversational document question answering
-- 🧠 Retrieval-Augmented Generation (RAG)
-- ✂️ Automatic text chunking with overlapping chunks
+- ✂️ Text chunking with overlapping chunks
 - 🔢 Sentence Transformer embeddings
 - 🗄️ ChromaDB vector database
 - 🔍 Semantic search using MMR
@@ -85,7 +84,6 @@ The system combines **semantic vector search, MMR, BM25 keyword search, and Reci
 - Vite
 - Tailwind CSS
 - Axios
-- Lucide React
 
 ### Backend
 
