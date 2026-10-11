@@ -323,7 +323,7 @@ Open http://localhost:5173 in your browser.
 
 ## 📷 Output
 
-The `Output SS/` directory can contain screenshots and video recording.
+The `Output/` directory contains screenshots and video recordings demonstrating the application's functionality.
 
 ---
 
