@@ -296,6 +296,8 @@ uvicorn app:app --reload
 - Backend: http://127.0.0.1:8000
 - API Docs: http://127.0.0.1:8000/docs
 
+**Note:** Whenever the backend starts, previously uploaded documents and stored embeddings are cleared. Upload your documents again after restarting the backend.
+
 ### 6 Run the Frontend
 
 Open a new terminal:
