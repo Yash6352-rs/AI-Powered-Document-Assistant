@@ -155,12 +155,6 @@ The embedding model converts document chunks into vector representations.
 
 These embeddings are stored in ChromaDB and used for semantic retrieval.
 
-### Why this model?
-
-- Produces compact text embeddings.
-- Supports semantic similarity search.
-- Is suitable for a lightweight document retrieval pipeline.
-
 ## 3. Hybrid Retrieval
 
 When a user asks a question, the system performs vector search and keyword search.
@@ -298,16 +292,15 @@ The current implementation searches across the indexed documents rather than app
 Document-AI-Assistant/
 │
 ├── backend/
-│   ├── app.py
-│   ├── uploads/
 │   ├── chroma_db/
+│   ├── uploads/
 │   ├── utils/
 │   │   ├── chunking.py
-│   │   ├── embeddings.py
 │   │   ├── document_loader.py
+│   │   ├── embeddings.py
 │   │   └── rag_pipeline.py
+│   ├── app.py
 │   ├── requirements.txt
-│   └── .env
 │
 ├── frontend/
 │   ├── src/
@@ -319,10 +312,9 @@ Document-AI-Assistant/
 │   ├── package.json
 │   └── vite.config.js
 │
+├── .env
 └── README.md
 ```
-
-*Adjust the structure above if any directory or filename differs in your actual repository.*
 
 ---
 
@@ -339,11 +331,9 @@ Document-AI-Assistant/
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone [<YOUR_GITHUB_REPOSITORY_URL>](https://github.com/Yash6352-rs/AI-Powered-Document-Assistant)
 cd Document-AI-Assistant
 ```
-
-Replace the placeholder URL with your actual GitHub repository URL.
 
 ### 2. Set Up the Backend
 
@@ -354,18 +344,6 @@ python -m venv venv
 ```
 
 Activate the virtual environment.
-
-**Windows PowerShell:**
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-**Windows Command Prompt:**
-
-```cmd
-venv\Scripts\activate.bat
-```
 
 Install the dependencies:
 
@@ -381,23 +359,10 @@ Create a `.env` file inside the `backend` directory.
 OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
-Replace the placeholder with your actual API key.
-
-**Important:** Never commit your `.env` file, API keys, or other credentials to GitHub.
-
 ### 4. Configure Tesseract OCR
 
 Install Tesseract OCR on your system.
 
-If necessary, configure its executable path in your document-loading code:
-
-```python
-pytesseract.pytesseract.tesseract_cmd = (
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-)
-```
-
-Update the path to match your Tesseract installation.
 
 ### 5. Start the Backend
 
@@ -454,19 +419,25 @@ Internal exception details are logged for debugging without exposing them in use
 
 ## 📷 Output
 
-The `output/` directory can contain screenshots and demonstration assets, such as:
+The `Output SS/` directory can contain screenshots and demonstration assets, such as:
 
 - Homepage
-- Document upload
-- Uploaded document list
-- User question
-- Assistant answer
-- Follow-up conversation
-- Multiple document upload
-- Multi-document question answering
-- Architecture diagram
+- 1-user-interface
+- 2-file-upload
+- 3-text-file_1
+- 3-text-file_2
+- 3-text-file_3
+- 4-pdf-query_1
+- 4-pdf-query_2
+- 5-pdf-table_1
+- 5-pdf-table_2
+- 6-pdf-image_1
+- 6-pdf-image_2
+- 7-pdf-not-found-query
+- PDF File Recording
+- TXT File Recording
 
-Add these screenshots if you include an `output/` directory in the repository.
+Add these screenshots if you include an `Output SS/` directory in the repository.
 
 ---
 
@@ -480,17 +451,9 @@ Add these screenshots if you include an `output/` directory in the repository.
 - 📄 **Scanned document support:** Improve extraction from complex scanned tables and images.
 - 🔗 **Clickable citations:** Allow users to open the original document at a cited page.
 - ☁️ **Cloud deployment:** Deploy the frontend and backend to a production environment.
-- 🐳 **Docker support:** Simplify setup and deployment with containerization.
 
 ---
 
 ## 👨‍💻 Developed By
 
 **Yash Panchal**
-
-Built with:
-
-```text
-React + FastAPI + LangChain + ChromaDB
-+ HuggingFace Embeddings + BM25 + OpenRouter
-```
