@@ -12,19 +12,12 @@ from utils.embeddings import load_vector_db, create_vector_db
 from utils.document_loader import load_document
 from utils.chunking import create_chunks
 
-
 # Logging
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-# LLM Configuration
-# LLM
-# llm = ChatGoogleGenerativeAI(
-#     model="gemini-3.6-flash",
-#     google_api_key=os.getenv("GOOGLE_API_KEY")
-# )
-
+# LLM 
 llm = ChatOpenAI(
     model="openai/gpt-3.5-turbo",
     openai_api_key=os.getenv("OPENROUTER_API_KEY"),
@@ -35,6 +28,11 @@ llm = ChatOpenAI(
 
 # BM25 Retriever
 bm25_retriever = None
+
+def reset_bm25_retriever():
+    global bm25_retriever
+    bm25_retriever = None
+    logger.info("BM25 retriever reset successfully.")
 
 # Process Uploaded Document
 def process_document(file_path, original_filename=None):

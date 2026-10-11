@@ -4,9 +4,9 @@ from langchain_community.vectorstores import Chroma
 DB_PATH = "chroma_db"
 
 def get_embedding_model():
-  return HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-  )
+    return HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
 def create_vector_db(chunks):
     embedding_model = get_embedding_model()
@@ -27,3 +27,13 @@ def load_vector_db():
         persist_directory=DB_PATH,
         embedding_function=embedding_model
     )
+
+def clear_vector_db():
+    embedding_model = get_embedding_model()
+
+    vectordb = Chroma(
+        persist_directory=DB_PATH,
+        embedding_function=embedding_model
+    )
+
+    vectordb.delete_collection()

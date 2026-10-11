@@ -1,11 +1,19 @@
 import os
 import uuid
+import shutil
 import logging
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from utils.embeddings import clear_vector_db
+from utils.rag_pipeline import reset_bm25_retriever
 
-from utils.rag_pipeline import ( process_document, get_rag_chain, rewrite_query, hybrid_retrieve)
+from utils.rag_pipeline import (
+    process_document,
+    get_rag_chain,
+    rewrite_query,
+    hybrid_retrieve
+)
 
 # Logging
 logging.basicConfig(
@@ -30,7 +38,26 @@ UPLOAD_FOLDER = "uploads"
 MAX_FILE_SIZE = 10 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".pdf", ".txt"}
 
+# Create uploads folder and remove old uploaded files at startup
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+for filename in os.listdir(UPLOAD_FOLDER):
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+
+    try:
+        if os.path.isfile(filepath) or os.path.islink(filepath):
+            os.remove(filepath)
+        elif os.path.isdir(filepath):
+            shutil.rmtree(filepath)
+    except OSError:
+        logger.exception("Failed to remove an old uploaded item")
+        raise
+
+clear_vector_db()
+reset_bm25_retriever()
+
+logger.info("Previous session data cleared successfully.")
+
 
 @app.get("/")
 def home():
@@ -39,12 +66,12 @@ def home():
         "message": "Document AI Backend Running"
     }
 
+
 @app.post("/uploads")
 async def upload_document(file: UploadFile = File(...)):
     filepath = None
 
     try:
-        # Validate filename and extension
         if not file.filename:
             raise HTTPException(
                 status_code=400,
@@ -59,7 +86,6 @@ async def upload_document(file: UploadFile = File(...)):
                 detail="Only PDF and TXT files are supported."
             )
 
-        # Read and validate file size
         contents = await file.read(MAX_FILE_SIZE + 1)
 
         if not contents:
@@ -74,23 +100,18 @@ async def upload_document(file: UploadFile = File(...)):
                 detail="File size must not exceed 10 MB."
             )
 
-        # Save using a unique filename
         filename = f"{uuid.uuid4().hex}{extension}"
         filepath = os.path.join(UPLOAD_FOLDER, filename)
 
         with open(filepath, "wb") as f:
             f.write(contents)
 
-        # Process uploaded document
         results = process_document(
             filepath,
             original_filename=file.filename
         )
 
-        logger.info(
-            "Document processed successfully: %s",
-            filename
-        )
+        logger.info("Document processed successfully: %s", filename)
 
         return {
             "success": True,
@@ -130,9 +151,9 @@ async def upload_document(file: UploadFile = File(...)):
     finally:
         await file.close()
 
+
 @app.post("/chat")
 async def chat(data: dict):
-    # Validate request body
     if not isinstance(data, dict):
         raise HTTPException(
             status_code=400,
@@ -161,7 +182,6 @@ async def chat(data: dict):
             detail="Chat history must be a list."
         )
 
-    # Validate chat history messages
     for message in chat_history:
         if (
             not isinstance(message, dict)
@@ -176,14 +196,10 @@ async def chat(data: dict):
     question = question.strip()
 
     try:
-        # Rewrite follow-up questions
         search_query = rewrite_query(question, chat_history)
 
-        # Retrieve relevant document chunks
-        # Retrieve relevant document chunks
         documents = hybrid_retrieve(search_query)
 
-        # Debug retrieved chunks
         for doc in documents:
             logger.info(
                 "Retrieved source: %s | Content: %s",
@@ -200,15 +216,13 @@ async def chat(data: dict):
                 "sources": []
             }
 
-        # Create RAG answer chain
         document_chain = get_rag_chain()
 
-        # Collect source citations
         unique_sources = set()
 
         for doc in documents:
             logger.info("SOURCE METADATA: %s", doc.metadata)
-            
+
             filename = doc.metadata.get("filename", "Unknown")
             page = doc.metadata.get("page")
             page = page + 1 if isinstance(page, int) else None
@@ -232,7 +246,6 @@ async def chat(data: dict):
             )
         ]
 
-        # Generate the complete answer
         response = document_chain.invoke({
             "context": documents,
             "input": search_query
