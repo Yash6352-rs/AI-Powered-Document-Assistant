@@ -114,48 +114,26 @@ The system combines **semantic vector search, MMR, BM25 keyword search, and Reci
 
 # 🧠 RAG Pipeline
 
-## 1. Document Processing
+## 1. 📄 Document Processing
 
-The application supports PDF and TXT documents.
+The application supports PDF and TXT files.
 
-- **PDF text:** Extracted using PyPDFLoader.
-- **Tables:** Extracted using pdfplumber.
-- **Images:** Text extracted from embedded PDF images using PyMuPDF, Pillow, and Tesseract OCR.
-- **TXT files:** Loaded using LangChain's TextLoader.
+- **PDF text:** PyPDFLoader
+- **Tables:** pdfplumber
+- **Image text (OCR):** PyMuPDF, Pillow, and Tesseract OCR
+- **TXT files:** LangChain TextLoader
 
-The extracted content is divided into smaller, overlapping chunks.
+Extracted content is split into overlapping chunks using `RecursiveCharacterTextSplitter` with `chunk_size=800` and `chunk_overlap=150`.
 
-```python
-RecursiveCharacterTextSplitter(
-    chunk_size=800,
-    chunk_overlap=150
-)
-```
+Each chunk stores metadata such as `document_id`, `filename`, `page`, and `chunk_id` for source identification.
 
-Each chunk stores metadata such as:
+## 2. 🔢 Embeddings
 
-- `document_id`
-- `filename`
-- `page`
-- `chunk_id`
+The project uses `sentence-transformers/all-MiniLM-L6-v2` to convert text chunks into vector embeddings, which are stored in ChromaDB for semantic search.
 
-This metadata helps identify the source of retrieved information.
+## 3. 🔍 Hybrid Retrieval
 
-## 2. Embeddings
-
-The project uses:
-
-```text
-sentence-transformers/all-MiniLM-L6-v2
-```
-
-The embedding model converts document chunks into vector representations.
-
-These embeddings are stored in ChromaDB and used for semantic retrieval.
-
-## 3. Hybrid Retrieval
-
-When a user asks a question, the system performs vector search and keyword search.
+The system combines vector search and keyword search to retrieve relevant information.
 
 ```text
                   User Query
@@ -176,85 +154,43 @@ When a user asks a question, the system performs vector search and keyword searc
              Relevance Filtering
 ```
 
-### Vector Search with MMR
+- **MMR:** Retrieves semantically relevant and diverse chunks (`k=4`, `fetch_k=10`, `lambda_mult=0.5`).
+- **BM25:** Finds matches based on keywords, names, and technical terms.
+- **RRF:** Combines rankings from both retrieval methods.
+- **Relevance Filtering:** Uses an LLM to remove irrelevant chunks before answer generation.
 
-Maximum Marginal Relevance (MMR) retrieves semantically relevant chunks while encouraging diversity in the results.
+## 4. ✨ Query Rewriting
 
-The current configuration uses:
+Follow-up questions are rewritten into standalone queries using the last six chat messages.
 
-- `k = 4`
-- `fetch_k = 10`
-- `lambda_mult = 0.5`
+**Example:**
+- User: What is machine learning?
+- User: What are its types?
 
-### BM25 Keyword Search
+The system uses conversation history to understand that the second question refers to machine learning.
 
-BM25 retrieves chunks based on keyword matching. It is useful for exact terms, names, numbers, and technical keywords.
+## 5. 🤖 Answer Generation
 
-The BM25 index is currently maintained in memory.
+LangChain passes the retrieved context to the LLM, which is instructed to:
 
-### Reciprocal Rank Fusion (RRF)
-
-RRF combines the ranked results from vector search and BM25 into a unified ranking.
-
-The system selects the top four fused chunks before applying LLM-based relevance filtering.
-
-### LLM-Based Relevance Filtering
-
-The LLM evaluates whether each retrieved chunk contains information useful for answering the user's question.
-
-Chunks judged irrelevant are removed before answer generation.
-
----
-
-## ✨ Query Rewriting
-
-The system supports conversational follow-up questions by rewriting them into standalone search queries.
-
-For example:
-
-```text
-User: What is machine learning?
-
-Assistant: Machine learning is ...
-
-User: What are its types?
-```
-
-The second question is rewritten using the conversation history so that the retrieval pipeline can identify the correct subject.
-
-The current implementation uses the last six chat messages, corresponding to approximately three user-assistant exchanges.
-
----
-
-## 🤖 Answer Generation
-
-The selected document chunks are passed to the language model through LangChain.
-
-The model is instructed to:
-
-- Answer using only the supplied document context.
+- Answer using document context.
 - Avoid unsupported information.
-- Keep answers clear and concise.
-- Match values to the correct table rows and columns.
-- Return a predefined fallback response when the answer is not supported by the context.
+- Provide clear, concise answers.
+- Interpret table values using their correct rows and columns.
 
-If relevant information is not found, the application returns:
+If the answer is not found, the system returns:
 
 ```text
 I couldn't find this information in the uploaded document.
 ```
 
----
+## 6. 📚 Source Citations
 
-## 📚 Source Citations
+The backend returns source metadata with each answer, including filenames, page numbers when available, and chunk IDs.
 
-The backend returns source metadata alongside the generated answer.
-
-Example:
+**Example:**
 
 ```text
-Sources
-
 report.pdf
 Page 2 • Chunk 3
 Page 4 • Chunk 7
@@ -263,11 +199,7 @@ notes.txt
 Chunk 1
 ```
 
-PDF sources can include page numbers, while TXT sources may contain chunk IDs without page numbers.
-
-Citations help users identify which retrieved document chunks were used as context for an answer.
-
----
+PDF citations can include page numbers, while TXT citations may show only chunk IDs. These sources help users identify the content used to generate an answer.---
 
 ## 📁 Project Structure
 
