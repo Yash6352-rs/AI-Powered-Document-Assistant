@@ -232,91 +232,86 @@ Document-AI-Assistant/
 ```
 
 ---
-
 ## 🚀 Installation and Setup
 
-### Prerequisites
-
+### 📋 Prerequisites
 - Python 3.10
 - Node.js and npm
 - Git
 - Tesseract OCR
 - OpenRouter API key
 
-### 1. Clone the Repository
+### 1️⃣ Clone the Repository
 
 ```bash
-git clone [<YOUR_GITHUB_REPOSITORY_URL>](https://github.com/Yash6352-rs/AI-Powered-Document-Assistant)
-cd Document-AI-Assistant
+git clone https://github.com/Yash6352-rs/AI-Powered-Document-Assistant.git
+cd AI-Powered-Document-Assistant
 ```
 
-### 2. Set Up the Backend
+### 2️⃣ Set Up the Backend
 
 ```bash
 cd backend
-
 python -m venv venv
 ```
 
-Activate the virtual environment.
+Activate the virtual environment on Windows:
 
-Install the dependencies:
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment Variables
+### 3️⃣ Configure the API Key
 
-Create a `.env` file inside the `backend` directory.
+Create a `.env` file inside the `backend` directory:
 
 ```env
 OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
-### 4. Configure Tesseract OCR
+### 4️⃣ Configure Tesseract OCR
 
-Install Tesseract OCR on your system.
+Install Tesseract OCR and ensure its executable path is configured correctly in your code.
 
-
-### 5. Start the Backend
-
-From the `backend` directory, run:
+### 5️⃣ ▶️ Run the Backend
 
 ```bash
 uvicorn app:app --reload
 ```
 
-The backend will be available at:
+- 🌐 Backend: http://127.0.0.1:8000
+- 📖 API Docs: http://127.0.0.1:8000/docs
 
-- Backend: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- API documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+### 6️⃣ 💻 Run the Frontend
 
-### 6. Start the Frontend
-
-Open a new terminal and navigate to the frontend directory:
+Open a new terminal:
 
 ```bash
 cd frontend
-
 npm install
 npm run dev
 ```
 
-Open the application in your browser:
-
-[http://localhost:5173](http://localhost:5173)
+Open http://localhost:5173 in your browser.
 
 ---
 
 ## 🛡️ Error Handling and Logging
 
-The application validates uploaded file types, file sizes, and empty files.
+- ✅ Validates file types, file sizes, and empty uploads.
+- ⚠️ Handles upload and request errors.
+- 📝 Uses Python logging for errors and `print()` for development progress.
+- 🔒 Keeps internal exception details out of user-facing error messages.
 
-FastAPI returns appropriate error responses for invalid uploads and failed requests. Python logging is used for errors and unexpected failures, while `print()` statements provide progress information during development.
+---
 
-Internal exception details are logged for debugging without exposing them in user-facing error responses.
-
+**🔐 Security:** Never commit your `.env` file or API key to GitHub.
 ---
 
 ## 📷 Output
