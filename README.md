@@ -1,238 +1,301 @@
-# 📄 RAG Document AI Assistant
+# 📄 AI-Powered Document Assistant
 
-An AI-powered **Document Question Answering system** that allows users to upload multiple PDF documents and chat with their contents using **Retrieval-Augmented Generation (RAG)**.
+An AI-powered **Document Question Answering system** that allows users to upload multiple PDF and TXT documents and chat with their contents using **Retrieval-Augmented Generation (RAG)**.
 
-The system combines **semantic vector search, MMR, BM25 keyword search, and Reciprocal Rank Fusion (RRF)** to retrieve relevant information before generating answers with Google's Gemini.
+The system combines **semantic vector search, MMR, BM25 keyword search, and Reciprocal Rank Fusion (RRF)** to retrieve relevant information before generating grounded answers using OpenAI GPT-3.5 Turbo through OpenRouter.
 
 ---
 
 ## ✨ Features
 
-- 📄 Upload multiple PDF documents
-- 💬 Conversational document Q&A
+- 📄 Upload multiple PDF and TXT documents
+- 💬 Conversational document question answering
 - 🧠 Retrieval-Augmented Generation (RAG)
-- ✂️ Automatic text chunking
+- ✂️ Automatic text chunking with overlapping chunks
 - 🔢 Sentence Transformer embeddings
 - 🗄️ ChromaDB vector database
-- 🔍 Semantic search with MMR
+- 🔍 Semantic search using MMR
 - 🔤 BM25 keyword search
 - 🔗 Reciprocal Rank Fusion (RRF)
-- ✨ Query rewriting using Gemini
-- 🤖 Gemini-powered answer generation
-- 📚 Source citations with filename, page and chunk ID
-- ⚡ Real-time streaming responses
-- 🧾 Conversation history
-- 🎨 Modern React + Tailwind CSS UI
-- 🗂️ Multi-PDF document management
+- ✨ Query rewriting for follow-up questions
+- 🤖 LLM-based answer generation using OpenRouter
+- 🧹 LLM-based relevance filtering
+- 📚 Source citations with filename, page number when available, and chunk ID
+- 🖼️ Text extraction from PDF images using OCR
+- 📊 Table extraction from PDF documents
+- 🛡️ Input validation and error handling
+- 🎨 React + Tailwind CSS user interface
+- 🗂️ Multi-document upload and retrieval
 
 ---
 
 # 🏗️ Architecture
 
 ```text
-                    User
-                     │
-                     ▼
-              React Frontend
-                     │
-                     ▼
-              FastAPI Backend
-                     │
-        ┌────────────┴────────────┐
-        │                         │
-    PDF Upload               User Question
-        │                         │
-        ▼                         ▼
-   PyPDFLoader              Query Rewriting
-        │                         │
-        ▼                         ▼
-  Text Chunking             Hybrid Retrieval
-        │                    ┌────┴────┐
-        ▼                    ▼         ▼
-   Embeddings             Vector     BM25
-        │                  MMR       Search
-        ▼                    └────┬────┘
-    ChromaDB                     ▼
-        │                        RRF
-        │                         │
-        └─────────────────────────▼
+                       User
+                        │
+                        ▼
+                 React Frontend
+                        │
+                        ▼
+                 FastAPI Backend
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+        Document Upload        User Question
+             │                     │
+             ▼                     ▼
+       PDF / TXT Loader       Query Rewriting
+             │                     │
+             ▼                     ▼
+     Text, Tables, OCR       Hybrid Retrieval
+             │                ┌────┴────┐
+             ▼                ▼         ▼
+       Text Chunking        Vector     BM25
+             │              MMR      Search
+             ▼                └────┬────┘
+         Embeddings                ▼
+             │                    RRF
+             ▼                     │
+          ChromaDB                 ▼
                             Top 4 Chunks
                                   │
                                   ▼
-                            Gemini LLM
+                         LLM Relevance Filter
+                                  │
+                                  ▼
+                          OpenRouter LLM
                                   │
                          ┌────────┴────────┐
                          ▼                 ▼
                     AI Response       Citations
-                         │
-                         ▼
-                   Stream to UI
+                         │                 │
+                         └────────┬────────┘
+                                  ▼
+                             React UI
 ```
+
 ---
 
 ## ⚙️ Tech Stack
 
-- Frontend
-  - React.js
-  - Vite
-  - Tailwind CSS
-  - Axios
+### Frontend
 
-- Backend
-  - Python
-  - FastAPI
-  - Uvicorn
+- React.js
+- Vite
+- Tailwind CSS
+- Axios
+- Lucide React
 
-- AI / RAG
-  - LangChain
-  - Google Gemini 3.6 Flash
-  - ChromaDB
-  - BM25Retriever
-  - Reciprocal Rank Fusion
-  - HuggingFace Embeddings
+### Backend
 
-- PDF Processing
-  - PyPDFLoader
-  - RecursiveCharacterTextSplitter
+- Python
+- FastAPI
+- Uvicorn
+
+### AI / RAG
+
+- LangChain
+- OpenRouter API
+- OpenAI GPT-3.5 Turbo
+- HuggingFace Sentence Transformers
+- ChromaDB
+- BM25Retriever
+- Reciprocal Rank Fusion (RRF)
+
+### Document Processing
+
+- PyPDFLoader
+- pdfplumber
+- PyMuPDF
+- Pillow
+- Tesseract OCR
+- RecursiveCharacterTextSplitter
 
 ---
 
 # 🧠 RAG Pipeline
 
 ## 1. Document Processing
-Uploaded PDFs are processed using PyPDFLoader.
 
-The extracted text is divided into chunks using:
+The application supports PDF and TXT documents.
+
+- **PDF text:** Extracted using PyPDFLoader.
+- **Tables:** Extracted using pdfplumber.
+- **Images:** Text extracted from embedded PDF images using PyMuPDF, Pillow, and Tesseract OCR.
+- **TXT files:** Loaded using LangChain's TextLoader.
+
+The extracted content is divided into smaller, overlapping chunks.
 
 ```python
 RecursiveCharacterTextSplitter(
-    chunk_size=800, chunk_overlap=150
+    chunk_size=800,
+    chunk_overlap=150
 )
 ```
 
-Each chunk receives metadata such as:
-  document_id
-  filename
-  page
-  chunk_id
+Each chunk stores metadata such as:
+
+- `document_id`
+- `filename`
+- `page`
+- `chunk_id`
+
+This metadata helps identify the source of retrieved information.
 
 ## 2. Embeddings
 
 The project uses:
+
 ```text
 sentence-transformers/all-MiniLM-L6-v2
 ```
-to convert document chunks into vector embeddings.
 
-The embeddings are stored in ChromaDB for semantic retrieval.
+The embedding model converts document chunks into vector representations.
+
+These embeddings are stored in ChromaDB and used for semantic retrieval.
+
+### Why this model?
+
+- Produces compact text embeddings.
+- Supports semantic similarity search.
+- Is suitable for a lightweight document retrieval pipeline.
 
 ## 3. Hybrid Retrieval
 
-When the user asks a question, the system performs two types of retrieval:
+When a user asks a question, the system performs vector search and keyword search.
 
 ```text
-User Query
-    │
-    ├──► Vector Search (MMR)
-    │
-    └──► BM25 Keyword Search
-              │
-              ▼
-             RRF
-              │
-              ▼
-         Top 4 Chunks
+                  User Query
+                      │
+             ┌────────┴────────┐
+             ▼                 ▼
+       Vector Search       BM25 Search
+            MMR             Keywords
+             │                 │
+             └────────┬────────┘
+                      ▼
+                     RRF
+                      │
+                      ▼
+                Top 4 Chunks
+                      │
+                      ▼
+             Relevance Filtering
 ```
 
-## Vector Search
+### Vector Search with MMR
 
-ChromaDB uses MMR (Maximal Marginal Relevance) to retrieve relevant and diverse chunks.
+Maximum Marginal Relevance (MMR) retrieves semantically relevant chunks while encouraging diversity in the results.
 
-### BM25
+The current configuration uses:
 
-BM25 provides keyword-based retrieval, which is useful for exact terms, names, numbers and technical keywords.
+- `k = 4`
+- `fetch_k = 10`
+- `lambda_mult = 0.5`
+
+### BM25 Keyword Search
+
+BM25 retrieves chunks based on keyword matching. It is useful for exact terms, names, numbers, and technical keywords.
 
 The BM25 index is currently maintained in memory.
 
-### RRF
+### Reciprocal Rank Fusion (RRF)
 
-Reciprocal Rank Fusion combines the rankings from vector search and BM25.
+RRF combines the ranked results from vector search and BM25 into a unified ranking.
+
+The system selects the top four fused chunks before applying LLM-based relevance filtering.
+
+### LLM-Based Relevance Filtering
+
+The LLM evaluates whether each retrieved chunk contains information useful for answering the user's question.
+
+Chunks judged irrelevant are removed before answer generation.
 
 ---
 
 ## ✨ Query Rewriting
 
-The system supports conversational follow-up questions.
+The system supports conversational follow-up questions by rewriting them into standalone search queries.
 
 For example:
+
 ```text
 User: What is machine learning?
 
+Assistant: Machine learning is ...
+
 User: What are its types?
 ```
-The second question is rewritten using Gemini and conversation history into a standalone search query.
 
-This improves retrieval for follow-up questions.
+The second question is rewritten using the conversation history so that the retrieval pipeline can identify the correct subject.
+
+The current implementation uses the last six chat messages, corresponding to approximately three user-assistant exchanges.
 
 ---
 
 ## 🤖 Answer Generation
 
-The top retrieved chunks are passed to Gemini.
+The selected document chunks are passed to the language model through LangChain.
 
 The model is instructed to:
 
-- Answer only from the provided context
-- Avoid hallucinations
-- Keep answers clear and concise
-- Return an appropriate response when information is unavailable
+- Answer using only the supplied document context.
+- Avoid unsupported information.
+- Keep answers clear and concise.
+- Match values to the correct table rows and columns.
+- Return a predefined fallback response when the answer is not supported by the context.
 
----
-
-## ⚡ Streaming Responses
-
-The FastAPI backend streams the generated response to the React frontend using NDJSON streaming.
-
-The frontend displays the answer as it is generated.
-
-After generation, the backend sends the source information.
-
----
-
-## 📚 Citations
-
-Each answer provides source information such as:
+If relevant information is not found, the application returns:
 
 ```text
-📚 Sources
-
-Generative AI Overview.pdf
-Page 3 • Chunk 2
-Page 6 • Chunk 13
-Page 8 • Chunk 21
+I couldn't find this information in the uploaded document.
 ```
-
-This allows users to understand where the retrieved information came from.
 
 ---
 
-## 📂 Multi-PDF Support
+## 📚 Source Citations
 
-Multiple PDFs can be uploaded.
+The backend returns source metadata alongside the generated answer.
+
+Example:
+
+```text
+Sources
+
+report.pdf
+Page 2 • Chunk 3
+Page 4 • Chunk 7
+
+notes.txt
+Chunk 1
+```
+
+PDF sources can include page numbers, while TXT sources may contain chunk IDs without page numbers.
+
+Citations help users identify which retrieved document chunks were used as context for an answer.
+
+---
+
+## 📂 Multiple Document Support
+
+The application allows users to upload multiple documents.
 
 Their chunks are added to:
 
-- ChromaDB for vector search
-- BM25 in-memory index for keyword search
+- **ChromaDB:** For vector-based retrieval.
+- **BM25 in-memory index:** For keyword-based retrieval.
 
-This allows the system to retrieve information across multiple documents.
+The retrieval pipeline combines results from these sources to find relevant information across indexed documents.
+
+The current implementation searches across the indexed documents rather than applying a document-specific filter to each question. The BM25 index is also maintained in memory.
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-Rag-Document-AI-Assistant/
+Document-AI-Assistant/
 │
 ├── backend/
 │   ├── app.py
@@ -241,7 +304,7 @@ Rag-Document-AI-Assistant/
 │   ├── utils/
 │   │   ├── chunking.py
 │   │   ├── embeddings.py
-│   │   ├── pdf_loader.py
+│   │   ├── document_loader.py
 │   │   └── rag_pipeline.py
 │   ├── requirements.txt
 │   └── .env
@@ -259,88 +322,175 @@ Rag-Document-AI-Assistant/
 └── README.md
 ```
 
+*Adjust the structure above if any directory or filename differs in your actual repository.*
+
 ---
 
-## 🚀 Installation
+## 🚀 Installation and Setup
 
-### Backend
+### Prerequisites
 
-```text
+- Python 3.10
+- Node.js and npm
+- Git
+- Tesseract OCR
+- OpenRouter API key
+
+### 1. Clone the Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd Document-AI-Assistant
+```
+
+Replace the placeholder URL with your actual GitHub repository URL.
+
+### 2. Set Up the Backend
+
+```bash
 cd backend
 
-conda create -n documentai python=3.10
-conda activate documentai
+python -m venv venv
+```
 
+Activate the virtual environment.
+
+**Windows PowerShell:**
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+**Windows Command Prompt:**
+
+```cmd
+venv\Scripts\activate.bat
+```
+
+Install the dependencies:
+
+```bash
 pip install -r requirements.txt
+```
 
+### 3. Configure Environment Variables
+
+Create a `.env` file inside the `backend` directory.
+
+```env
+OPENROUTER_API_KEY=your_openrouter_api_key
+```
+
+Replace the placeholder with your actual API key.
+
+**Important:** Never commit your `.env` file, API keys, or other credentials to GitHub.
+
+### 4. Configure Tesseract OCR
+
+Install Tesseract OCR on your system.
+
+If necessary, configure its executable path in your document-loading code:
+
+```python
+pytesseract.pytesseract.tesseract_cmd = (
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+)
+```
+
+Update the path to match your Tesseract installation.
+
+### 5. Start the Backend
+
+From the `backend` directory, run:
+
+```bash
 uvicorn app:app --reload
 ```
 
-- Backend:
-```text
-http://127.0.0.1:8000
-```
-- API documentation:
-```text
-http://127.0.0.1:8000/docs
-```
+The backend will be available at:
 
-### Frontend
+- Backend: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- API documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-```text
+### 6. Start the Frontend
+
+Open a new terminal and navigate to the frontend directory:
+
+```bash
 cd frontend
 
 npm install
 npm run dev
 ```
-- Frontend:
-```text
-http://localhost:5173
-```
 
-### 🔑 Environment Variables
+Open the application in your browser:
 
-Create .env inside the backend:
+[http://localhost:5173](http://localhost:5173)
 
-```text
-GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY
-```
 ---
 
-# 📷 Output 
-The output/ folder contains: 
-- Screenshots
-  - 1-homepage
-  - 2-pdf-uploading
-  - 3-pdf-uploaded
-  - 4-user-ques
-  - 5-assistant-answer
-  - 6-conversational-chat
-  - 7-multi-pdf-upload
-  - 8-multi-document-q&a
-  - Architecture Diagram
-    
----
-## 🔮 Future Improvements
+## 🧪 Usage
 
-- 🔐 User authentication
-- 🎯 Metadata-based document filtering
-- 💾 Persistent BM25 index
-- 📊 RAG evaluation
-- 🎯 Dedicated reranking model
-- ☁️ Cloud deployment
-- 🐳 Docker support
-- 📄 PDF preview
-- 🔗 Clickable source citations
+1. Start the backend and frontend.
+2. Open the application in your browser.
+3. Upload a PDF or TXT document.
+4. Wait for document processing to complete.
+5. Ask a question about the uploaded content.
+6. Review the answer and source citations.
+7. Ask follow-up questions using conversation context.
+8. Ask a question whose answer is absent from the document to test the fallback response.
+
+---
+
+## 🛡️ Error Handling and Logging
+
+The application validates uploaded file types, file sizes, and empty files.
+
+FastAPI returns appropriate error responses for invalid uploads and failed requests. Python logging is used for errors and unexpected failures, while `print()` statements provide progress information during development.
+
+Internal exception details are logged for debugging without exposing them in user-facing error responses.
+
+---
+
+## 📷 Output
+
+The `output/` directory can contain screenshots and demonstration assets, such as:
+
+- Homepage
+- Document upload
+- Uploaded document list
+- User question
+- Assistant answer
+- Follow-up conversation
+- Multiple document upload
+- Multi-document question answering
+- Architecture diagram
+
+Add these screenshots if you include an `output/` directory in the repository.
+
+---
+
+## 🔮 Limitations and Future Improvements
+
+- 🔎 **Document filtering:** Add document-specific metadata filtering to restrict retrieval to selected documents when needed.
+- 💾 **Persistent BM25 index:** Rebuild or persist the BM25 index across backend restarts.
+- 🧾 **Conversation persistence:** Store conversation history beyond the current frontend session.
+- 📊 **RAG evaluation:** Evaluate retrieval quality and answer accuracy using a test dataset.
+- 🎯 **Reranking:** Add a dedicated reranking model to improve retrieval quality.
+- 📄 **Scanned document support:** Improve extraction from complex scanned tables and images.
+- 🔗 **Clickable citations:** Allow users to open the original document at a cited page.
+- ☁️ **Cloud deployment:** Deploy the frontend and backend to a production environment.
+- 🐳 **Docker support:** Simplify setup and deployment with containerization.
 
 ---
 
 ## 👨‍💻 Developed By
 
-Yash Panchal
+**Yash Panchal**
 
 Built with:
 
 ```text
-React + FastAPI + LangChain + ChromaDB + BM25 + Gemini
+React + FastAPI + LangChain + ChromaDB
++ HuggingFace Embeddings + BM25 + OpenRouter
 ```
