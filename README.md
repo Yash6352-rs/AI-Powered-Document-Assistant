@@ -377,19 +377,6 @@ Open the application in your browser:
 
 ---
 
-## 🧪 Usage
-
-1. Start the backend and frontend.
-2. Open the application in your browser.
-3. Upload a PDF or TXT document.
-4. Wait for document processing to complete.
-5. Ask a question about the uploaded content.
-6. Review the answer and source citations.
-7. Ask follow-up questions using conversation context.
-8. Ask a question whose answer is absent from the document to test the fallback response.
-
----
-
 ## 🛡️ Error Handling and Logging
 
 The application validates uploaded file types, file sizes, and empty files.
@@ -419,8 +406,6 @@ The `Output SS/` directory can contain screenshots and demonstration assets, suc
 - 7-pdf-not-found-query
 - PDF File Recording
 - TXT File Recording
-
-Add these screenshots if you include an `Output SS/` directory in the repository.
 
 ---
 
