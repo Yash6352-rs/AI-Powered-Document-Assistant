@@ -112,6 +112,14 @@ The system combines **semantic vector search, MMR, BM25 keyword search, and Reci
 
 ---
 
+## 🧹 Automatic Data Cleanup
+
+The application automatically removes previously uploaded files, clears existing document embeddings from ChromaDB, and resets the BM25 retriever when the backend starts.
+
+This ensures that each startup begins with clean document data, allowing users to upload and process documents without retaining old data.
+
+---
+
 # 🧠 RAG Pipeline
 
 ## 1. Document Processing
