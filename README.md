@@ -271,21 +271,6 @@ Citations help users identify which retrieved document chunks were used as conte
 
 ---
 
-## 📂 Multiple Document Support
-
-The application allows users to upload multiple documents.
-
-Their chunks are added to:
-
-- **ChromaDB:** For vector-based retrieval.
-- **BM25 in-memory index:** For keyword-based retrieval.
-
-The retrieval pipeline combines results from these sources to find relevant information across indexed documents.
-
-The current implementation searches across the indexed documents rather than applying a document-specific filter to each question. The BM25 index is also maintained in memory.
-
----
-
 ## 📁 Project Structure
 
 ```text
